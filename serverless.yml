@@ -1,0 +1,55 @@
+service: oz-defender-practice
+configValidationMode: error
+useDotenv: true
+frameworkVersion: '3'
+
+provider:
+  name: defender
+  stage: ${opt:stage, 'dev'}
+  stackName: 'mystack'
+  ssot: false
+
+defender:
+  key: '${env:TEAM_API_KEY}'
+  secret: '${env:TEAM_API_SECRET}'
+
+resources:
+  actions:
+    action-example-1:
+      name: 'Hello world from serverless'
+      path: './dist/actions/hello-world'
+      relayer: ${self:resources.relayers.relayer-1}
+      trigger:
+        type: 'schedule'
+        frequency: 1500
+      paused: false
+      environment-variables:
+        hello: 'world!'
+
+  policies:
+    policy-1:
+      gas-price-cap: 1000
+      whitelist-receivers:
+        - '0x0f06aB75c7DD497981b75CD82F6566e3a5CAd8f2'
+      eip1559-pricing: true
+      private-transactions: false
+
+  relayers:
+    relayer-1:
+      name: 'My Relayer'
+      network: 'sepolia'
+      min-balance: 1000
+      policy: ${self:resources.policies.policy-1}
+      api-keys:
+        - key1
+
+  contracts:
+    contract-1:
+      name: 'Demo-Flash'
+      address: '0xA91382E82fB676d4c935E601305E5253b3829dCD'
+      network: 'mainnet'
+      abi: ${file(./src/abis/demoflash.json.abi)}
+      nat-spec: null
+
+plugins:
+  - '@openzeppelin/defender-as-code'

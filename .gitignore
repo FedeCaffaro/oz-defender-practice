@@ -1,0 +1,22 @@
+# Defender
+secrets*.yml
+.defender
+
+# package directories
+node_modules
+jspm_packages
+
+# Serverless directories
+.serverless
+
+# Other
+.env
+*.log
+.DS_Store
+
+# Platform
+secrets*.yml
+.defender
+.platform
+
+dist/
