@@ -1,55 +1,109 @@
-service: oz-defender-practice
+service: defender-as-code-test-project
 configValidationMode: error
+frameworkVersion: "3"
 useDotenv: true
-frameworkVersion: '3'
 
 provider:
   name: defender
   stage: ${opt:stage, 'dev'}
-  stackName: 'mystack'
+  stackName: mystack
   ssot: false
 
 defender:
-  key: '${env:TEAM_API_KEY}'
-  secret: '${env:TEAM_API_SECRET}'
+  key: ${env:DEFENDER_API_KEY}
+  secret: ${env:DEFENDER_API_SECRET}
 
 resources:
   actions:
-    action-example-1:
-      name: 'Hello world from serverless'
-      path: './dist/actions/hello-world'
-      relayer: ${self:resources.relayers.relayer-1}
+    detect-new-markets:
+      name: "Detect New V3 Markets"
+      path: "./dist/actions/detect-new-markets"  # Path to the compiled action code
+      relayer: ${self:resources.relayers.main-relayer}  # Reference to a relayer defined below
       trigger:
-        type: 'schedule'
-        frequency: 1500
+        type: "monitor"  # This action is triggered by a monitor
+        monitor: ${self:resources.monitors.forked-mainnet}  # Reference to the monitor
       paused: false
       environment-variables:
-        hello: 'world!'
+        DEFENDER_API_KEY: ${env:DEFENDER_API_KEY}
+        DEFENDER_API_SECRET: ${env:DEFENDER_API_SECRET}
 
-  policies:
-    policy-1:
-      gas-price-cap: 1000
-      whitelist-receivers:
-        - '0x0f06aB75c7DD497981b75CD82F6566e3a5CAd8f2'
-      eip1559-pricing: true
-      private-transactions: false
-
-  relayers:
-    relayer-1:
-      name: 'My Relayer'
-      network: 'sepolia'
-      min-balance: 1000
-      policy: ${self:resources.policies.policy-1}
-      api-keys:
-        - key1
-
+  policies: {}
   contracts:
-    contract-1:
-      name: 'Demo-Flash'
-      address: '0xA91382E82fB676d4c935E601305E5253b3829dCD'
-      network: 'mainnet'
-      abi: ${file(./src/abis/demoflash.json.abi)}
-      nat-spec: null
+    ens-resolver:
+      name: ENS Resolver
+      address: "0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41"
+      network: forked-mainnet
+  relayers:
+    main-relayer:
+      name: "Main Relayer"
+      network: mainnet
+      min-balance: 1.0  # Minimum balance to keep in the relayer
+      policy: {}
+      api-keys:
+        - "key1"
+  notifications:
+    fede:
+      type: email
+      name: Fede
+      config:
+        emails:
+          - fcaffaro@itba.edu.ar
+      paused: false
+  monitors:
+    forked-mainnet:
+      name: ENSResolverMonitor
+      type: BLOCK
+      network: forked-mainnet
+      addresses:
+        - "0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41"
+      skip-abi-validation: false
+      paused: false
+      confirm-level: 1
+      notify-config:
+        timeout: 0
+        message: |-
+          **Defender Monitor {{ sentinel.name }} Triggered**
+
+          **Network**
+
+          {{ sentinel.network }}
+
+          **Block Hash**
+
+          {{ blockHash }}
+
+          **Transaction Hash**
+
+          {{ transaction.transactionHash }}
+
+          **Explorer Link**
+
+          {{ transaction.link }}
+
+          **Match Reasons**
+
+          {{ matchReasonsFormatted }}
+
+          **Metadata**
+
+          {{ metadataFormatted }}
+        message-subject: "Defender Monitor: Forked-Mainnet triggered"
+        channels:
+          - ${self:resources.notifications.fede}
+      conditions:
+        event:
+          - expression: >-
+              node=="0x7dcf87198fd673716e5a32b206d9379c4fcbad8875073f52bfd0656759bf89ed"
+              AND key=="v3-official-markets"
+            signature: TextChanged(bytes32,string,string)
+  forked-networks:
+    forked-mainnet:
+      name: forked-mainnet
+      supported-network: mainnet
+      rpc-url: https://rpc.phalcon.blocksec.com/rpc_48c18fd184f1418f996940d910a74f1a
+      block-explorer-url: https://app.blocksec.com/fork/scan/fork_0ad741b6961b4e9ba41b09f84bb652c6
+  private-networks: {}
+  block-explorer-api-keys: {}
 
 plugins:
-  - '@openzeppelin/defender-as-code'
+  - "@openzeppelin/defender-as-code"

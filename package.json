@@ -7,17 +7,23 @@
     "node": ">14.16"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
+    "start": "node dist/actions/detect-new-markets.js",
+    "dev": "ts-node src/actions/detect-new-markets.ts",
     "deploy": "sls deploy"
   },
   "license": "MIT",
   "devDependencies": {
     "@openzeppelin/defender-as-code": "^2.2.0",
+    "@types/node": "^22.5.0",
+    "dotenv": "^16.4.5",
     "serverless": "^3.20.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5.5.4"
   },
   "dependencies": {
-    "dotenv": "^16.4.5"
+    "@openzeppelin/defender-sdk": "^1.14.3",
+    "alchemy-sdk": "^3.4.1",
+    "ethers": "^6.13.2"
   }
 }
