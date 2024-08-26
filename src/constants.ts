@@ -1,7 +1,6 @@
 import * as dotenv from "dotenv";
 dotenv.config();
 
-export const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY as string;
 export const DEFENDER_API_KEY = process.env.DEFENDER_API_KEY as string;
 export const DEFENDER_API_SECRET = process.env.DEFENDER_API_SECRET as string;
 export const ALCHEMY_RPC_URL = process.env.ALCHEMY_RPC_URL as string;
@@ -14,4 +13,5 @@ export const ENS_COMPOUND_NODE = process.env.ENS_COMPOUND_NODE as string;
 export const MONITOR_CHAIN_ID = parseInt(
   process.env.MONITOR_CHAIN_ID as string
 );
-export const NOTIFICATION_CHANNEL_ALIAS = process.env.NOTIFICATION_CHANNEL_ALIAS as string;
+export const NOTIFICATION_CHANNEL_ALIAS = process.env
+  .NOTIFICATION_CHANNEL_ALIAS as string;

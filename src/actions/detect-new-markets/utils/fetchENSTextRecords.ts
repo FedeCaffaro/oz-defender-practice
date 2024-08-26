@@ -5,7 +5,7 @@ import {
   ENS_COMPOUND_RESOLVER_ADDRESS,
   ENS_COMPOUND_NODE,
 } from "../../../constants";
-import { ethers } from "ethers";
+import { Contract } from "ethers";
 
 export async function fetchENSTextRecord(chainId: number): Promise<JSON> {
   try {
@@ -19,7 +19,7 @@ export async function fetchENSTextRecord(chainId: number): Promise<JSON> {
       );
       return textRecords;
     } else {
-      const contract = new ethers.Contract(
+      const contract = new Contract(
         ENS_COMPOUND_RESOLVER_ADDRESS,
         ["function text(bytes32 node, string key) view returns (string)"],
         phalconProvider

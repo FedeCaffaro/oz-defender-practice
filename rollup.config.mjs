@@ -11,14 +11,11 @@ const config = [
     output: {
       file: "dist/actions/detect-new-markets/index.js",
       format: "cjs",
-      sourcemap: true,
     },
     plugins: [
       resolve({ preferBuiltins: true }),
       commonjs(),
       typescript({ tsconfig: "./tsconfig.json" }),
-      json(),
-      yaml(),
     ],
     external: [
       ...builtins,
@@ -26,8 +23,6 @@ const config = [
       "@openzeppelin/defender-sdk",
       "@openzeppelin/defender-sdk-action-client",
       "dotenv",
-      "axios",
-      /^@openzeppelin\/defender-(relay|autotask|client)(\/.*)?$/,
     ],
   },
 ];
