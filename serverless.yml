@@ -17,76 +17,56 @@ resources:
   actions:
     detect-new-markets:
       name: "Detect New V3 Markets"
-      path: "./dist/actions/detect-new-markets"  # Path to the compiled action code
-      relayer: ${self:resources.relayers.main-relayer}  # Reference to a relayer defined below
+      path: "./dist/actions/detect-new-markets"
+      relayer: ${self:resources.relayers.main-relayer} 
       trigger:
-        type: "monitor"  # This action is triggered by a monitor
-        monitor: ${self:resources.monitors.forked-mainnet}  # Reference to the monitor
+        type: sentinel
       paused: false
       environment-variables:
         DEFENDER_API_KEY: ${env:DEFENDER_API_KEY}
         DEFENDER_API_SECRET: ${env:DEFENDER_API_SECRET}
-
   policies: {}
   contracts:
     ens-resolver:
       name: ENS Resolver
-      address: "0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41"
+      address: ${env:ENS_RESOLVER_ADDRESS}
       network: forked-mainnet
+      abi: ${file(./src/abis/ens-resolver.json)}
   relayers:
     main-relayer:
       name: "Main Relayer"
-      network: mainnet
-      min-balance: 1.0  # Minimum balance to keep in the relayer
+      network: forked-mainnet
+      min-balance: 1.0
       policy: {}
       api-keys:
         - "key1"
   notifications:
     fede:
       type: email
-      name: Fede
+      name: ${env:NOTIFICATION_CHANNEL_ALIAS}
       config:
         emails:
           - fcaffaro@itba.edu.ar
       paused: false
+
   monitors:
     forked-mainnet:
       name: ENSResolverMonitor
-      type: BLOCK
+      type: "BLOCK"
       network: forked-mainnet
-      addresses:
-        - "0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41"
+      contracts:
+        - ${self:resources.contracts.ens-resolver}
+      abi: ${file(./src/abis/ens-resolver.json)}
+      # addresses:
+      #   - ${env:ENS_RESOLVER_ADDRESS}
       skip-abi-validation: false
       paused: false
+      # action-condition: ${self:resources.actions.detect-new-markets}
+      action-trigger: ${self:resources.actions.detect-new-markets}
       confirm-level: 1
       notify-config:
         timeout: 0
-        message: |-
-          **Defender Monitor {{ sentinel.name }} Triggered**
-
-          **Network**
-
-          {{ sentinel.network }}
-
-          **Block Hash**
-
-          {{ blockHash }}
-
-          **Transaction Hash**
-
-          {{ transaction.transactionHash }}
-
-          **Explorer Link**
-
-          {{ transaction.link }}
-
-          **Match Reasons**
-
-          {{ matchReasonsFormatted }}
-
-          **Metadata**
-
-          {{ metadataFormatted }}
+        message: "Message"
         message-subject: "Defender Monitor: Forked-Mainnet triggered"
         channels:
           - ${self:resources.notifications.fede}
@@ -100,8 +80,8 @@ resources:
     forked-mainnet:
       name: forked-mainnet
       supported-network: mainnet
-      rpc-url: https://rpc.phalcon.blocksec.com/rpc_48c18fd184f1418f996940d910a74f1a
-      block-explorer-url: https://app.blocksec.com/fork/scan/fork_0ad741b6961b4e9ba41b09f84bb652c6
+      rpc-url: ${env:PHALCON_RPC_URL}
+      block-explorer-url: ${env:PHALCON_BLOCK_EXPLORER_URL}
   private-networks: {}
   block-explorer-api-keys: {}
 

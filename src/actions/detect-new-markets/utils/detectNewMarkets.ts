@@ -1,4 +1,4 @@
-import { Market, MarketInfo } from "../interfaces";
+import { Market, MarketInfo } from "../interfaces/interfaces";
 
 export function detectNewMarkets(textRecords: JSON, activeMonitors: any[]): Market[] {
   // Initialize a map to store monitored addresses by network
