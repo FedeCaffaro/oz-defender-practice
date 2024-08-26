@@ -15,6 +15,7 @@ const config = [
     plugins: [
       resolve({ preferBuiltins: true }),
       commonjs(),
+      json({ compact: true }),
       typescript({ tsconfig: "./tsconfig.json" }),
     ],
     external: [

@@ -1,9 +1,10 @@
 import { fetchENSTextRecord, defenderClient } from "../../common";
-import { detectNewMarkets, formatNewMarketsMessage } from "./utils";
+import { detectNewMarkets, formatNewMarketsHTMLMessage } from "./utils";
 import { MONITOR_CHAIN_ID, NOTIFICATION_CHANNEL_ALIAS } from "../../constants";
-import {
-  MonitorConditionResponse,
-} from "@openzeppelin/defender-sdk-action-client";
+import { MonitorConditionResponse } from "@openzeppelin/defender-sdk-action-client";
+import { ethers } from "ethers";
+import { createContract } from "../push-new-markets/utils/createContract";
+import cometAbi from "../../abis/comet.json";
 
 export async function handler(event: any, context: any) {
   try {
@@ -22,17 +23,36 @@ export async function handler(event: any, context: any) {
     // Send notifications & generate a match if new markets are detected
     if (newMarkets.length > 0) {
       try {
-        // Send a notification if new markets are detected
-        const message = formatNewMarketsMessage(newMarkets);
+        // Format the message in an HTML template
+        const formattedMessage = formatNewMarketsHTMLMessage(newMarkets);
         await notificationClient.send({
           channelAlias: NOTIFICATION_CHANNEL_ALIAS,
           subject: "New Markets Detected",
-          message: `<p> The following new markets have been detected:\n\n${message}. </p>`,
+          message: formattedMessage,
         });
         console.log("Notification sent successfully.");
+
+        // After sending notifications, create contracts for each new market
+        for (const market of newMarkets) {
+          const { network: networkId, marketInfo } = market;
+          const { baseSymbol, cometAddress } = marketInfo;
+
+          // Convert network ID to network name
+          const networkDetails = ethers.providers.getNetwork(Number(networkId));
+          const networkName = networkDetails ? networkDetails.name : "unknown";
+          console.log(networkName);
+          // Create a contract in Defender's address book
+          await createContract(
+            networkName,
+            baseSymbol,
+            cometAddress,
+            JSON.stringify(cometAbi)
+          );
+        }
       } catch (err) {
-        console.error("Error sending notification:", err);
+        console.error("Error sending notification or creating contracts:", err);
       }
+
       const match = {
         hash: payload.events[0].transaction.transactionHash,
         metadata: {
