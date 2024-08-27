@@ -9,7 +9,7 @@
   "scripts": {
     "build": "rollup -c",
     "start": "node dist/actions/detect-new-markets.js",
-    "dev": "ts-node src/actions/detect-new-markets.ts",
+    "dev": "ts-node src/actions/detect-new-markets",
     "deploy": "sls deploy"
   },
   "license": "MIT",

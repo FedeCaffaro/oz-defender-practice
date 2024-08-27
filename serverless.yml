@@ -34,6 +34,25 @@ resources:
         ENS_COMPOUND_NODE: ${env:ENS_COMPOUND_NODE}
         ALCHEMY_RPC_URL: ${env:ALCHEMY_RPC_URL}
         MONITOR_CHAIN_ID: ${env:MONITOR_CHAIN_ID}
+    push-new-markets:
+      name: "Push New V3 Markets"
+      path: "./dist/actions/push-new-markets"
+      relayer: ${self:resources.relayers.main-relayer}
+      trigger:
+        type: sentinel
+      paused: false
+      environment-variables:
+        DEFENDER_API_KEY: ${env:DEFENDER_API_KEY}
+        DEFENDER_API_SECRET: ${env:DEFENDER_API_SECRET}
+        PHALCON_RPC_URL: ${env:PHALCON_RPC_URL}
+        PHALCON_BLOCK_EXPLORER_URL: ${env:PHALCON_BLOCK_EXPLORER_URL}
+        ENS_RESOLVER_ADDRESS: ${env:ENS_RESOLVER_ADDRESS}
+        NOTIFICATION_CHANNEL_ALIAS: ${env:NOTIFICATION_CHANNEL_ALIAS}
+        ENS_COMPOUND_DOMAIN: ${env:ENS_COMPOUND_DOMAIN}
+        ENS_COMPOUND_KEY: ${env:ENS_COMPOUND_KEY}
+        ENS_COMPOUND_NODE: ${env:ENS_COMPOUND_NODE}
+        ALCHEMY_RPC_URL: ${env:ALCHEMY_RPC_URL}
+        MONITOR_CHAIN_ID: ${env:MONITOR_CHAIN_ID}
   policies: {}
   contracts:
     ens-resolver:
@@ -70,8 +89,8 @@ resources:
       #   - ${env:ENS_RESOLVER_ADDRESS}
       skip-abi-validation: false
       paused: false
-      # action-condition: ${self:resources.actions.detect-new-markets}
-      action-trigger: ${self:resources.actions.detect-new-markets}
+      action-condition: ${self:resources.actions.detect-new-markets}
+      action-trigger: ${self:resources.actions.push-new-markets}
       confirm-level: 1
       notify-config:
         timeout: 0

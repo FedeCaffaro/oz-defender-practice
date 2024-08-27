@@ -26,6 +26,26 @@ const config = [
       "dotenv",
     ],
   },
+  {
+    input: "src/actions/push-new-markets/index.ts",
+    output: {
+      file: "dist/actions/push-new-markets/index.js",
+      format: "cjs",
+    },
+    plugins: [
+      resolve({ preferBuiltins: true }),
+      commonjs(),
+      json({ compact: true }),
+      typescript({ tsconfig: "./tsconfig.json" }),
+    ],
+    external: [
+      ...builtins,
+      "ethers",
+      "@openzeppelin/defender-sdk",
+      "@openzeppelin/defender-sdk-action-client",
+      "dotenv",
+    ],
+  },
 ];
 
 export default config;
