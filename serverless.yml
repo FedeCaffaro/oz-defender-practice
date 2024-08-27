@@ -59,7 +59,12 @@ resources:
       name: ENS Resolver
       address: ${env:ENS_RESOLVER_ADDRESS}
       network: forked-mainnet
-      abi: ${file(./src/abis/ens-resolver.json)}
+      abi: ${file(./src/common/abis/ens-resolver.json)}
+    v3-commet:
+      name: Compound V3 Commet
+      address: ${env:V3_COMPOUND_ADDRESS}
+      network: forked-mainnet
+      abi: ${file(./src/common/abis/ens-resolver.json)}
   relayers:
     main-relayer:
       name: "Main Relayer"
@@ -78,15 +83,13 @@ resources:
       paused: false
 
   monitors:
-    forked-mainnet:
+    forked-mainnet-ens-resolver:
       name: ENSResolverMonitor
       type: "BLOCK"
       network: forked-mainnet
       contracts:
         - ${self:resources.contracts.ens-resolver}
-      abi: ${file(./src/abis/ens-resolver.json)}
-      # addresses:
-      #   - ${env:ENS_RESOLVER_ADDRESS}
+      abi: ${file(./src/common/abis/ens-resolver.json)}
       skip-abi-validation: false
       paused: false
       action-condition: ${self:resources.actions.detect-new-markets}
@@ -95,7 +98,7 @@ resources:
       notify-config:
         timeout: 0
         message: "Message"
-        message-subject: "Defender Monitor: Forked-Mainnet triggered"
+        message-subject: "Defender Monitor: forked-mainnet-ens-resolver: triggered"
         channels:
           - ${self:resources.notifications.fede}
       conditions:
@@ -104,6 +107,28 @@ resources:
               node=="0x7dcf87198fd673716e5a32b206d9379c4fcbad8875073f52bfd0656759bf89ed"
               AND key=="v3-official-markets"
             signature: TextChanged(bytes32,string,string)
+    forked-mainnet-compound-v3-commet:
+      name: CompoundV3CommetMonitor
+      type: "BLOCK"
+      network: forked-mainnet
+      contracts:
+        - ${self:resources.contracts.v3-commet}
+      abi: ${file(./src/common/abis/comet.json)}
+      skip-abi-validation: false
+      paused: false
+      action-condition: ${self:resources.actions.detect-paused-markets}
+      action-trigger: null
+      confirm-level: 1
+      notify-config:
+        timeout: 0
+        message: "Message"
+        message-subject: "Defender Monitor: forked-mainnet-compound-v3-commet: triggered"
+        channels:
+          - ${self:resources.notifications.fede}
+      conditions:
+        transaction:
+           - signature: PauseAction(bool,bool,bool,bool,bool);
+# bool supplyPaused,bool transferPaused,bool withdrawPaused,bool absorbPaused,bool buyPaused
   forked-networks:
     forked-mainnet:
       name: forked-mainnet
