@@ -107,28 +107,6 @@ resources:
               node=="0x7dcf87198fd673716e5a32b206d9379c4fcbad8875073f52bfd0656759bf89ed"
               AND key=="v3-official-markets"
             signature: TextChanged(bytes32,string,string)
-    forked-mainnet-compound-v3-commet:
-      name: CompoundV3CommetMonitor
-      type: "BLOCK"
-      network: forked-mainnet
-      contracts:
-        - ${self:resources.contracts.v3-commet}
-      abi: ${file(./src/common/abis/comet.json)}
-      skip-abi-validation: false
-      paused: false
-      action-condition: ${self:resources.actions.detect-paused-markets}
-      action-trigger: null
-      confirm-level: 1
-      notify-config:
-        timeout: 0
-        message: "Message"
-        message-subject: "Defender Monitor: forked-mainnet-compound-v3-commet: triggered"
-        channels:
-          - ${self:resources.notifications.fede}
-      conditions:
-        transaction:
-           - signature: PauseAction(bool,bool,bool,bool,bool);
-# bool supplyPaused,bool transferPaused,bool withdrawPaused,bool absorbPaused,bool buyPaused
   forked-networks:
     forked-mainnet:
       name: forked-mainnet
