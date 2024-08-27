@@ -1,6 +1,14 @@
-import { fetchENSTextRecord, defenderClient } from "../../common";
-import { detectNewMarkets, formatNewMarketsHTMLMessage } from "./utils";
-import { MONITOR_CHAIN_ID, NOTIFICATION_CHANNEL_ALIAS } from "../../constants";
+import { get } from "http";
+import {
+  defenderClient,
+  MONITOR_CHAIN_ID,
+  NOTIFICATION_CHANNEL_ALIAS,
+} from "../../common";
+import {
+  detectNewMarkets,
+  formatNewMarketsHTMLMessage,
+  fetchENSTextRecord,
+} from "./utils";
 // import { MonitorConditionResponse } from "@openzeppelin/defender-sdk-action-client";
 
 export async function handler(payload: any, context: any) {

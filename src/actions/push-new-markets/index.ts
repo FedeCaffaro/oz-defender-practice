@@ -1,5 +1,5 @@
-import { chainIds } from "../../constants";
-import cometAbi from "../../abis/comet.json";
+import { chainIds } from "../../common";
+import cometAbi from "../../common/abis/comet.json";
 import { Market } from "../detect-new-markets/interfaces/interfaces";
 import { createMonitor, updateMonitor, createContract } from "./utils";
 
@@ -32,7 +32,6 @@ export async function handler(params: any) {
       (monitor: any) =>
         monitor.network.toLowerCase() === networkName.toLowerCase()
     );
-
     if (existingMonitor) {
       await updateMonitor(existingMonitor, cometAddress);
     } else {

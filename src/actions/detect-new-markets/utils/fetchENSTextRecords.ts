@@ -1,10 +1,12 @@
-import { mainnetProvider, phalconProvider } from "../../../common/rpcProvider";
 import {
+  mainnetProvider,
+  phalconProvider,
   ENS_COMPOUND_DOMAIN,
   ENS_COMPOUND_KEY,
   ENS_COMPOUND_RESOLVER_ADDRESS,
   ENS_COMPOUND_NODE,
-} from "../../../constants";
+} from "../../../common";
+
 import { Contract } from "ethers";
 
 export async function fetchENSTextRecord(chainId: number): Promise<JSON> {
